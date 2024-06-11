@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Таймер</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+        }
+        .timer-container {
+            margin-bottom: 20px;
+        }
+        .timer-label {
+            font-size: 24px;
+            margin-right: 20px;
+        }
+        .timer-display {
+            font-size: 24px;
+            width: 100px;
+            display: inline-block;
+        }
+        .button {
+            font-size: 18px;
+            margin-left: 10px;
+        }
+        .log-container {
+            margin-top: 30px;
+            width: 60%;
+        }
+        .log-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .log-section {
+            margin-bottom: 20px;
+        }
+        .log-entry {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        .delete-button {
+            font-size: 16px;
+            margin-left: 10px;
+            color: red;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="timer-container">
+        <span class="timer-label">Сканирование товара:</span>
+        <span id="scan-timer" class="timer-display">0.000</span>
+        <button class="button" onclick="startScanTimer()">Старт</button>
+        <button class="button" onclick="stopScanTimer()">Стоп</button>
+        <button class="button" onclick="pauseScanTimer()">Пауза</button>
+    </div>
+    <div class="timer-container">
+        <span class="timer-label">Умещение товара ТУ:</span>
+        <span id="place-timer" class="timer-display">0.000</span>
+        <button class="button" onclick="startPlaceTimer()">Старт</button>
+        <button class="button" onclick="stopPlaceTimer()">Стоп</button>
+        <button class="button" onclick="pausePlaceTimer()">Пауза</button>
+    </div>
+    <div class="log-container">
+        <div class="log-title">Лог таймеров:</div>
+        <div id="scan-log-section" class="log-section">
+            <div class="log-title">Сканирование товара:</div>
+            <div id="scan-log" class="log-entry"></div>
+        </div>
+        <div id="place-log-section" class="log-section">
+            <div class="log-title">Умещение товара ТУ:</div>
+            <div id="place-log" class="log-entry"></div>
+        </div>
+    </div>
+    <script>
+        let scanTime = 0;
+        let placeTime = 0;
+        let scanInterval;
+        let placeInterval;
+        let scanLogCounter = 1;
+        let placeLogCounter = 1;
+        function updateTimer(displayId, time) {
+            document.getElementById(displayId).textContent = time.toFixed(3);
+        }
+        function addLogEntry(logId, logCounter, time) {
+            const logContainer = document.getElementById(logId);
+            const newLogEntry = document.createElement('div');
+            newLogEntry.className = "log-entry";
+            newLogEntry.innerHTML = `${logCounter}. ${time.toFixed(3)} секунд <span class="delete-button" onclick="deleteLogEntry(this)">Удалить</span>`;
+            logContainer.appendChild(newLogEntry);
+        }
+        function deleteLogEntry(element) {
+            const logEntry = element.parentElement;
+            logEntry.parentElement.removeChild(logEntry);
+        }
+        function startScanTimer() {
+            clearInterval(scanInterval);
+            scanInterval = setInterval(() => {
+                scanTime += 0.01;
+                updateTimer('scan-timer', scanTime);
+            }, 10);
+        }
+        function stopScanTimer() {
+            clearInterval(scanInterval);
+            addLogEntry('scan-log', scanLogCounter++, scanTime);
+            scanTime = 0;
+            updateTimer('scan-timer', scanTime);
+        }
+        function pauseScanTimer() {
+            clearInterval(scanInterval);
+        }
+        function startPlaceTimer() {
+            clearInterval(placeInterval);
+            placeInterval = setInterval(() => {
+                placeTime += 0.01;
+                updateTimer('place-timer', placeTime);
+            }, 10);
+        }
+        function stopPlaceTimer() {
+            clearInterval(placeInterval);
+            addLogEntry('place-log', placeLogCounter++, placeTime);
+            placeTime = 0;
+            updateTimer('place-timer', placeTime);
+        }
+        function pausePlaceTimer() {
+            clearInterval(placeInterval);
+        }
+    </script>
+</body>
+</html>
